@@ -1,0 +1,240 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Yantramanav', sans-serif;
+  color: #2f184b;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background:
+    linear-gradient(rgba(255,255,255,.18), rgba(255,255,255,.18)),
+    url('assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 24px 12px 60px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.panel {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,.18);
+}
+
+.hero {
+  background: #9b72cf;
+}
+
+.hero__header {
+  padding: 18px 18px 10px;
+}
+
+.hero__header h1,
+.card h2,
+.page-header h1 {
+  font-family: 'Darumadrop One', cursive;
+  line-height: 1;
+}
+
+.hero__header h1,
+.page-header h1 {
+  font-size: 3rem;
+}
+
+.hero__meta,
+.hero__song,
+.page-header p,
+.card p,
+.list {
+  font-family: 'Cute Font', cursive;
+}
+
+.hero__meta,
+.hero__song,
+.page-header p {
+  font-size: 1.5rem;
+}
+
+.hero__song {
+  text-align: center;
+  color: #f4effa;
+  margin-top: 8px;
+}
+
+.hero__banner {
+  display: block;
+}
+
+.hero__banner img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 14 / 5;
+  object-fit: cover;
+}
+
+.hero__grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 16px;
+  padding: 18px;
+  align-items: start;
+}
+
+.hero__avatar {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.hero__text p {
+  font-size: 1.35rem;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 0 18px 18px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #ebb7f5;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-family: 'Space Mono', monospace;
+  transition: transform .2s ease, opacity .2s ease;
+  opacity: .95;
+}
+
+.pill:hover {
+  transform: scale(1.03);
+  opacity: 1;
+}
+
+.about,
+.content-section {
+  background: #a278d2;
+  padding: 18px;
+  display: grid;
+  gap: 18px;
+}
+
+.card {
+  background: rgba(255,255,255,.18);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.card h2 {
+  font-size: 2.25rem;
+  margin-bottom: 10px;
+}
+
+.card p,
+.list {
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+.list {
+  padding-left: 1.2rem;
+}
+
+.gallery {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.gallery img {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.page-header {
+  background: #9b72cf;
+  padding: 18px;
+}
+
+.page-header p {
+  margin: 6px 0 14px;
+}
+
+.page--simple .content-section {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.panel--footer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 18px;
+  background: #a278d2;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.panel--footer img {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  object-fit: cover;
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 12px 8px 40px;
+  }
+
+  .hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__header h1,
+  .page-header h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero__meta,
+  .hero__song,
+  .page-header p {
+    font-size: 1.3rem;
+  }
+
+  .hero__text p,
+  .card p,
+  .list {
+    font-size: 1.1rem;
+  }
+
+  .panel--footer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -44,6 +44,7 @@ a {
 
 .hero__header {
   padding: 18px 18px 10px;
+  background: rgba(255,255,255,.15);
 }
 
 .hero__header h1,
@@ -95,6 +96,7 @@ a {
   gap: 16px;
   padding: 18px;
   align-items: start;
+  position: relative;
 }
 
 .hero__avatar {
@@ -103,6 +105,22 @@ a {
   display: block;
   aspect-ratio: 1 / 1;
   object-fit: cover;
+}
+
+.hero__sticker {
+  width: 88px;
+  position: absolute;
+  z-index: 2;
+}
+
+.hero__sticker--left {
+  top: -14px;
+  left: -10px;
+}
+
+.hero__sticker--right {
+  right: -10px;
+  bottom: 8px;
 }
 
 .hero__text p {
@@ -128,6 +146,10 @@ a {
   font-family: 'Space Mono', monospace;
   transition: transform .2s ease, opacity .2s ease;
   opacity: .95;
+}
+
+.pill__icon {
+  line-height: 1;
 }
 
 .pill:hover {
@@ -215,6 +237,10 @@ a {
 
   .hero__grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero__sticker {
+    width: 70px;
   }
 
   .hero__header h1,

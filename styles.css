@@ -38,46 +38,36 @@ a {
   box-shadow: 0 10px 25px rgba(0,0,0,.18);
 }
 
-.hero {
-  background: #9b72cf;
+.profile {
+  background: #c8b1e4;
 }
 
-.hero__header {
-  padding: 18px 18px 10px;
-  background: rgba(255,255,255,.15);
-}
+/* topbar */
 
-.hero__header h1,
-.card h2,
-.page-header h1 {
-  font-family: 'Darumadrop One', cursive;
-  line-height: 1;
-}
-
-.hero__header h1,
-.page-header h1 {
-  font-size: 3rem;
-}
-
-.hero__meta,
-.hero__song,
-.page-header p,
-.card p,
-.list {
-  font-family: 'Cute Font', cursive;
-}
-
-.hero__meta,
-.hero__song,
-.page-header p {
-  font-size: 1.5rem;
-}
-
-.hero__song {
-  text-align: center;
+.topbar {
+  background: #532b88;
   color: #f4effa;
-  margin-top: 8px;
+  font-family: 'Cute Font', cursive;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 1.1rem;
 }
+
+.topbar__player {
+  flex: 1;
+  text-align: center;
+  min-width: 140px;
+}
+
+.topbar__home {
+  opacity: .9;
+}
+
+/* hero */
 
 .hero__banner {
   display: block;
@@ -90,51 +80,76 @@ a {
   object-fit: cover;
 }
 
-.hero__grid {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 16px;
+.hero__inner {
   padding: 18px;
-  align-items: start;
-  position: relative;
+  display: grid;
+  gap: 16px;
+}
+
+.hero__titlestrip {
+  background: #9b72cf;
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
 }
 
 .hero__avatar {
-  width: 100%;
+  width: 84px;
+  height: 84px;
   border-radius: 14px;
-  display: block;
-  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border: 3px solid #590c08;
+  flex-shrink: 0;
+}
+
+.hero__titletext {
+  flex: 1;
+  min-width: 140px;
+}
+
+.hero__name {
+  font-family: 'Darumadrop One', cursive;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: #2f184b;
+}
+
+.hero__meta {
+  font-family: 'Cute Font', cursive;
+  font-size: 1.4rem;
+  color: #2f184b;
+  margin-top: 4px;
+}
+
+.hero__extra {
+  margin-left: auto;
+  text-align: right;
+}
+
+.hero__discord {
+  font-family: 'Yantramanav', sans-serif;
+  font-size: .95rem;
+  color: #040308;
+}
+
+.hero__badges {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.hero__badges img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   object-fit: cover;
 }
 
-.hero__sticker {
-  width: 88px;
-  position: absolute;
-  z-index: 2;
-}
-
-.hero__sticker--left {
-  top: -14px;
-  left: -10px;
-}
-
-.hero__sticker--right {
-  right: -10px;
-  bottom: 8px;
-}
-
-.hero__text p {
-  font-size: 1.35rem;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.hero__actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  padding: 0 18px 18px;
-}
+/* pill (shared with subpage "back home" links) */
 
 .pill {
   display: inline-flex;
@@ -157,7 +172,168 @@ a {
   opacity: 1;
 }
 
-.about,
+.pill--wide {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* secondary banner + stickers */
+
+.banner2 {
+  position: relative;
+  padding: 0 18px 18px;
+}
+
+.banner2 img:first-child {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  aspect-ratio: 14 / 3;
+  object-fit: cover;
+}
+
+.sticker {
+  position: absolute;
+  width: 56px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.sticker--a {
+  top: 0;
+  right: 20px;
+}
+
+.sticker--b {
+  bottom: 0;
+  left: 6px;
+}
+
+.sticker--c {
+  top: 35%;
+  left: 44%;
+}
+
+/* about */
+
+.about {
+  padding: 0 18px 18px;
+}
+
+.about__columns {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.about__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.about__label {
+  font-family: 'Darumadrop One', cursive;
+  font-size: 2.1rem;
+  line-height: 1;
+  color: #2f184b;
+}
+
+.about__box {
+  border-radius: 14px;
+  padding: 16px;
+  font-family: 'Cute Font', cursive;
+  font-size: 1.2rem;
+  line-height: 1.5;
+  color: #2f184b;
+}
+
+.about__box--byf,
+.about__box--interests {
+  background: #a278d2;
+}
+
+.about__box--me {
+  background: #9b72cf;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.about__photo {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+  object-fit: cover;
+  max-height: 160px;
+}
+
+.about__me-photo {
+  width: 100%;
+  border-radius: 12px;
+  object-fit: cover;
+  margin-top: auto;
+}
+
+.about__me-strip {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.badge-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ebb7f5;
+  opacity: .7;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: .85rem;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.badge-pill:hover {
+  opacity: 1;
+  transform: scale(1.03);
+}
+
+.footer-strip {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+/* shared subpage styles (anime.html / games.html) */
+
+.card h2,
+.page-header h1 {
+  font-family: 'Darumadrop One', cursive;
+  line-height: 1;
+}
+
+.page-header h1 {
+  font-size: 3rem;
+}
+
+.page-header p {
+  font-family: 'Cute Font', cursive;
+  font-size: 1.5rem;
+}
+
 .content-section {
   background: #a278d2;
   padding: 18px;
@@ -178,6 +354,7 @@ a {
 
 .card p,
 .list {
+  font-family: 'Cute Font', cursive;
   font-size: 1.2rem;
   line-height: 1.5;
 }
@@ -213,54 +390,42 @@ a {
   border-top-right-radius: 0;
 }
 
-.panel--footer {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  padding: 18px;
-  background: #a278d2;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.panel--footer img {
-  width: 100%;
-  border-radius: 12px;
-  display: block;
-  object-fit: cover;
-}
-
 @media (max-width: 520px) {
   body {
     padding: 12px 8px 40px;
   }
 
-  .hero__grid {
-    grid-template-columns: 1fr;
+  .hero__name {
+    font-size: 1.9rem;
   }
 
-  .hero__sticker {
-    width: 70px;
+  .hero__meta {
+    font-size: 1.15rem;
   }
 
-  .hero__header h1,
+  .hero__extra {
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .about__columns {
+    flex-direction: column;
+  }
+
+  .sticker {
+    width: 42px;
+  }
+
   .page-header h1 {
     font-size: 2.5rem;
   }
 
-  .hero__meta,
-  .hero__song,
   .page-header p {
     font-size: 1.3rem;
   }
 
-  .hero__text p,
   .card p,
   .list {
     font-size: 1.1rem;
-  }
-
-  .panel--footer {
-    grid-template-columns: repeat(2, 1fr);
   }
 }

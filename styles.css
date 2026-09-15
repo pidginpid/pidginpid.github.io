@@ -190,7 +190,7 @@ a {
 
 .banner2 {
   position: relative;
-  margin: 0 -18px -18px;
+  margin: 10px -18px -18px;
 }
 
 .banner2 img:first-child {
@@ -235,6 +235,10 @@ a {
   align-items: stretch;
 }
 
+.about__columns:has(.about__details[open]) {
+  flex-direction: column;
+}
+
 .about__col {
   flex: 1;
   display: flex;
@@ -258,7 +262,6 @@ a {
 .about__summary {
   cursor: pointer;
   user-select: none;
-  border-radius: 12px;
   padding: 8px 12px;
   transition: background-color .2s ease, transform .2s ease;
 }
@@ -275,6 +278,15 @@ a {
   margin-top: 10px;
 }
 
+.about__details {
+  color:  #9b72cf;;
+  background-color:  #9b72cf;;
+}
+
+.about__details:hover {
+  transform: scale(1.02);
+}
+
 .about__label {
   font-family: 'Darumadrop One', cursive;
   font-size: 2.3rem;
@@ -283,16 +295,11 @@ a {
 }
 
 .about__box {
-  border-radius: 14px;
   padding: 18px;
   font-family: 'Cute Font', cursive;
-  font-size: 1.4rem;
-  line-height: 1.55;
+  font-size: 2rem;
+  line-height: 1.1;
   color: #2f184b;
-}
-
-.about__box:hover {
-  transform: scale(1.02);
 }
 
 .about__box--byf,

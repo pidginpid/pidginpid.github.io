@@ -190,12 +190,13 @@ a {
 
 .banner2 {
   position: relative;
+  margin: 0 -18px -18px;
 }
 
 .banner2 img:first-child {
   width: 100%;
   display: block;
-  border-radius: 14px;
+  border-radius: 0;
   aspect-ratio: 14 / 3;
   object-fit: cover;
 }
@@ -258,7 +259,7 @@ a {
   cursor: pointer;
   user-select: none;
   border-radius: 12px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   transition: background-color .2s ease, transform .2s ease;
 }
 
@@ -276,17 +277,17 @@ a {
 
 .about__label {
   font-family: 'Darumadrop One', cursive;
-  font-size: 2.1rem;
+  font-size: 2.3rem;
   line-height: 1;
   color: #2f184b;
 }
 
 .about__box {
   border-radius: 14px;
-  padding: 16px;
+  padding: 18px;
   font-family: 'Cute Font', cursive;
-  font-size: 1.2rem;
-  line-height: 1.5;
+  font-size: 1.4rem;
+  line-height: 1.55;
   color: #2f184b;
 }
 
@@ -331,6 +332,7 @@ a {
   display: flex;
   gap: 10px;
   margin-top: 12px;
+  flex-wrap: wrap;
 }
 
 .badge-pill {
@@ -340,9 +342,9 @@ a {
   background: #ebb7f5;
   opacity: .7;
   border-radius: 10px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   font-family: 'Space Mono', monospace;
-  font-size: .85rem;
+  font-size: .95rem;
   transition: opacity .2s ease, transform .2s ease;
 }
 
@@ -452,6 +454,19 @@ a {
 
   .about__columns {
     flex-direction: column;
+  }
+
+  .about__label {
+    font-size: 2rem;
+  }
+
+  .about__box {
+    font-size: 1.25rem;
+    padding: 16px;
+  }
+
+  .badge-pill {
+    font-size: .9rem;
   }
 
   .sticker {

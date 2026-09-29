@@ -1,0 +1,7 @@
+{
+  "name": "pid's site",
+  "description": "Personal website for pid featuring profile, interests, gaming, anime, music, shows, and silly stuff.",
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

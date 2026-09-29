@@ -11,10 +11,18 @@
   <script src="script.js" defer></script>
 </head>
 <body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
+
   <main class="page page--simple">
     <section class="panel page-header">
-      <h1>games</h1>
-      <p>some of the games I like or play regularly</p>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>games</h1>
+          <p>some of the games I like or play regularly</p>
+        </div>
+        <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 theme</button>
+      </div>
       <small>disclaimer: I rarely play competitive games and I am usually not open to playing them with you, especially valorant and LOL.</small><br><br>
       <a class="pill" href="https://steamcommunity.com/id/pidginnn/"><span>link to my steam page</span></a><br><br>
       <a class="pill" href="index.html"><span class="pill__icon">⌂</span><span>back to the main page</span></a>

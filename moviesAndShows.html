@@ -1,10 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pid's shows and movies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yantramanav:wght@400;900&family=Cute+Font&family=Darumadrop+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
 </head>
 <body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
 
+  <main class="page page--simple">
+    <section class="panel page-header">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>shows/movies</h1>
+          <p>movies, live-action series and films I enjoy or want to watch.</p>
+        </div>
+        <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 theme</button>
+      </div>
+      <a class="pill" href="index.html"><span class="pill__icon">⌂</span><span>back to the main page</span></a>
+    </section>
+
+    <section class="panel content-section">
+      <div class="card card--full">
+        <h2>favorite movies</h2>
+        <ul class="list">
+          <li>Interstellar</li>
+          <li>Blade Runner 2049</li>
+          <li>Fight Club</li>
+          <li>The Matrix</li>
+          <li>Inception</li>
+          <li>Spider-Man: Into the Spider-Verse</li>
+          <li>Everything Everywhere All at Once</li>
+          <li>Shutter Island</li>
+          <li>Drive</li>
+          <li>The Batman (2022)</li>
+        </ul>
+      </div>
+
+      <div class="card card--full">
+        <h2>favorite shows / series</h2>
+        <ul class="list">
+          <li>Breaking Bad</li>
+          <li>Better Call Saul</li>
+          <li>Mr. Robot</li>
+          <li>Severance</li>
+          <li>Dark</li>
+          <li>Stranger Things</li>
+          <li>The Boys</li>
+          <li>Arcane</li>
+          <li>Black Mirror</li>
+          <li>Chernobyl</li>
+        </ul>
+      </div>
+
+      <div class="card card--full">
+        <h2>plan to watch</h2>
+        <ul class="list">
+          <li>Succession</li>
+          <li>The Sopranos</li>
+          <li>Twin Peaks</li>
+          <li>Dune: Part Two</li>
+          <li>True Detective (Season 1)</li>
+          <li>Fargo</li>
+          <li>Mindhunter</li>
+        </ul>
+      </div>
+
+      <div class="card card--full">
+        <h2>currently watching</h2>
+        <ul class="list">
+          <li>Severance Season 2</li>
+          <li>Mr. Robot rewatch</li>
+          <li>Better Call Saul rewatch</li>
+        </ul>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

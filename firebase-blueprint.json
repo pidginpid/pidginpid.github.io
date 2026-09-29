@@ -1,0 +1,60 @@
+{
+  "entities": {
+    "GuestbookMessage": {
+      "title": "Guestbook Message",
+      "description": "A public visitor guestbook note with optional image attachment",
+      "type": "object",
+      "properties": {
+        "author": {
+          "type": "string",
+          "description": "Name or alias of the visitor (defaults to anonymous sender)",
+          "maxLength": 50
+        },
+        "body": {
+          "type": "string",
+          "description": "Message text content",
+          "maxLength": 1000
+        },
+        "image": {
+          "type": "string",
+          "description": "Optional image data URL or image link"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or display date of submission"
+        }
+      },
+      "required": ["author", "createdAt"]
+    },
+    "Doodle": {
+      "title": "Doodle",
+      "description": "A visitor drawing created on the gimmick canvas",
+      "type": "object",
+      "properties": {
+        "dataUrl": {
+          "type": "string",
+          "description": "Image PNG data URL"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or display date of submission"
+        }
+      },
+      "required": ["dataUrl", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/GuestbookMessage"
+      },
+      "description": "Public guestbook messages"
+    },
+    "/doodles/{doodleId}": {
+      "schema": {
+        "$ref": "#/entities/Doodle"
+      },
+      "description": "Public visitor doodles"
+    }
+  }
+}

@@ -1,10 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>draw</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yantramanav:wght@400;900&family=Cute+Font&family=Darumadrop+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
 
+  <main class="page page--simple draw-page">
+    <section class="panel page-header">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>draw a gimmick</h1>
+          <p>paint, doodle or sketch a gimmick for pid's page!</p>
+        </div>
+        <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 theme</button>
+      </div>
+      <a class="pill" href="index.html"><span class="pill__icon">⌂</span><span>back to the main page</span></a>
+    </section>
+
+    <div class="canvas-container" style="margin-top:16px;">
+      <div class="toolbox">
+        <button id="brushBtn" class="active" title="Brush">✏️ brush</button>
+        <button id="eraserBtn" title="Eraser">🧽 eraser</button>
+        <button id="fillBtn" title="Paint Bucket">🪣 fill</button>
+        <button id="undoBtn" title="Undo">↺ undo</button>
+        <button id="clearBtn" title="Clear">clear</button>
+
+        <div class="size-control">
+          <span>Size</span>
+          <input type="range" id="brushSize" min="2" max="40" value="8">
+        </div>
+
+        <div class="color-wrapper">
+          <input type="color" id="colorPicker" value="#000000">
+        </div>
+      </div>
+
+      <canvas id="drawingCanvas"></canvas>
+
+      <div class="send-area">
+        <button class="send-btn" id="downloadBtn" type="button">download drawing</button>
+        <button class="send-btn" id="sendBtn" type="button">send drawing</button>
+      </div>
+    </div>
+
+    <!-- Gallery of saved drawings -->
+    <section class="panel content-section" style="margin-top:16px; border-radius:18px;">
+      <div class="card card--full">
+        <h2>saved doodles (<span id="doodleCount">0</span>)</h2>
+        <div class="gallery" id="doodlesGallery" style="margin-top:10px;">
+          <!-- Populated by script.js with saved drawings -->
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

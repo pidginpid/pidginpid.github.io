@@ -1,0 +1,22 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Guestbook messages
+    match /messages/{messageId} {
+      allow read: if true;
+      allow create: if request.resource.data.author is string
+                    && request.resource.data.createdAt is string
+                    && ((request.resource.data.body is string && request.resource.data.body.size() > 0)
+                        || (request.resource.data.image is string && request.resource.data.image.size() > 0));
+      allow update, delete: if false;
+    }
+
+    // Gimmick doodles
+    match /doodles/{doodleId} {
+      allow read: if true;
+      allow create: if request.resource.data.dataUrl is string
+                    && request.resource.data.createdAt is string;
+      allow update, delete: if false;
+    }
+  }
+}

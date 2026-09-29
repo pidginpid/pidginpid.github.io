@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pid's site</title>
+  <meta name="description" content="Personal website for pid featuring profile, interests, gaming, anime, music, shows, and silly stuff." />
+  <meta property="og:title" content="pid's site" />
+  <meta property="og:description" content="Personal website for pid featuring profile, interests, gaming, anime, music, shows, and silly stuff." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Yantramanav:wght@400;900&family=Cute+Font&family=Darumadrop+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -11,12 +14,22 @@
   <script src="script.js" defer></script>
 </head>
 <body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
+
   <main class="page">
     <div class="panel profile">
       <header class="topbar">
         <span class="topbar__song">TUYU - Under Kids</span>
-        <span class="topbar__player">▶︎ •၊၊||၊|။||||| 3:26</span>
-        <span class="topbar__home">Home</span>
+        <button class="topbar__player" id="topbarPlayerBtn" type="button" aria-label="Play TUYU - Under Kids">
+          <span class="player-icon" id="topbarPlayIcon">▶︎</span>
+          <span class="player-equalizer" id="topbarEqualizer"> •၊၊||၊|။||||| </span>
+          <span class="player-time" id="topbarTime">3:26</span>
+        </button>
+        <div class="topbar__actions">
+          <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 theme</button>
+          <span class="topbar__home">Home</span>
+        </div>
       </header>
 
       <section class="hero">
@@ -40,18 +53,33 @@
             </div>
           </div>
 
-          <a class="pill pill--wide" href="#about"><span class="pill__icon">☰</span><span>more about me!</span></a>
+          <button class="pill pill--wide navmenu-toggle" id="navmenuToggle" type="button" aria-expanded="false" aria-controls="navmenu">
+            <span class="pill__icon">☰</span><span>more about me!</span>
+          </button>
         </div>
       </section>
 
       <section class="about" id="about">
-        <div class="about__columns">
-          <div class="about__col">
-            <details class="about__details" name="about-accordion">
-              <summary class="about__summary">
-                <h2 class="about__label">About me!</h2>
-              </summary>
+        <div class="navmenu" id="navmenu" aria-hidden="true">
+          <nav class="navmenu__bar" role="tablist" aria-label="About menu">
+            <button class="navmenu__item is-active" id="tab-about" type="button" role="tab" aria-selected="true" aria-controls="panel-about" tabindex="0">
+              About me!
+            </button>
+            <button class="navmenu__item" id="tab-byf" type="button" role="tab" aria-selected="false" aria-controls="panel-byf" tabindex="-1">
+              BYF!
+            </button>
+            <button class="navmenu__item" id="tab-interests" type="button" role="tab" aria-selected="false" aria-controls="panel-interests" tabindex="-1">
+              Interests!
+            </button>
+            <button class="navmenu__item" id="tab-silly" type="button" role="tab" aria-selected="false" aria-controls="panel-silly" tabindex="-1">
+              Silly stuff
+            </button>
+          </nav>
+
+          <div class="navmenu__content">
+            <div class="navmenu__panel is-active" id="panel-about" role="tabpanel" aria-labelledby="tab-about">
               <div class="about__box about__box--byf">
+                <h2 class="about__label">About me!</h2>
                 <p>
                   haii I'm pidgin or pid for short but you may call me whatever you like! I'm studying computer science and I really love technology, computers and anything tech related TBH (it's basically my biggest interest), besides that I also really enjoy gaming, collecting figures/fumos/stickers/merch, anime, listening to music, gym and pc building. My interests section goes into a lot more depth so please check that out if you'd like to know more!!
                 </p>
@@ -64,13 +92,11 @@
                   my friends initials: S, S, S, S (yes 4 S's help), V, M, F
                 </p>
               </div>
-            </details>
+            </div>
 
-            <details class="about__details" name="about-accordion">
-              <summary class="about__summary">
-                <h2 class="about__label">BYF!</h2>
-              </summary>
+            <div class="navmenu__panel" id="panel-byf" role="tabpanel" aria-labelledby="tab-byf" hidden>
               <div class="about__box about__box--byf">
+                <h2 class="about__label">BYF!</h2>
                 <p>
                   - If you're just gonna argue with me on everything, leave. (I am up to meaningful debate but not pointless arguments, I am not your caregiver either)
                   - I have a life outside of social media so if I'm not being able to respond to you and that bothers you, leave.
@@ -80,15 +106,11 @@
                   - also just have problems with my health in general so I might sometimes be distant, avoidant, isolative, etc
                 </p>
               </div>
-            </details>
-          </div>
+            </div>
 
-          <div class="about__col">
-            <details class="about__details" name="about-accordion">
-              <summary class="about__summary">
-                <h2 class="about__label">Interests!</h2>
-              </summary>
+            <div class="navmenu__panel" id="panel-interests" role="tabpanel" aria-labelledby="tab-interests" hidden>
               <div class="about__box about__box--interests">
+                <h2 class="about__label">Interests!</h2>
                 <p>here's some lists I made of stuff I like! each button leads to a page with more information about that specific area of interest :p</p>
                 <div class="badge-row">
                   <a class="badge-pill" href="games.html"><span>🎮</span><span>games</span></a>
@@ -97,13 +119,11 @@
                   <a class="badge-pill" href="moviesAndShows.html"><span>🎬</span><span>shows/movies</span></a>
                 </div>
               </div>
-            </details>
+            </div>
 
-            <details class="about__details" name="about-accordion">
-              <summary class="about__summary">
-                <h2 class="about__label">Silly stuff</h2>
-              </summary>
+            <div class="navmenu__panel" id="panel-silly" role="tabpanel" aria-labelledby="tab-silly" hidden>
               <div class="about__box about__box--interests">
+                <h2 class="about__label">Silly stuff</h2>
                 <div class="badge-row">
                   <a class="badge-pill" href="rat.html"><span>gummy rat</span></a>
                   <a class="badge-pill" href="soph.html"><span>the nerd</span></a>
@@ -113,10 +133,13 @@
                   <a class="badge-pill" href="message.html"><span>♥</span><span>leave a message</span></a>
                 </div>
               </div>
-            </details>
-              <img class="about__me-photo" src="assets/decor-1.gif" alt="decorative image" />
-              <img class="about__me-strip" src="assets/decor-2.gif" alt="decorative strip" />
+            </div>
           </div>
+        </div>
+
+        <div class="decor-strip-row" aria-hidden="true">
+          <img class="decor-strip-item" src="assets/decor-1.gif" alt="decorative image" />
+          <img class="decor-strip-item" src="assets/decor-2.gif" alt="decorative strip" />
         </div>
 
         <div class="banner2">

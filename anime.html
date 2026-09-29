@@ -11,10 +11,18 @@
   <script src="script.js" defer></script>
 </head>
 <body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
+
   <main class="page page--simple">
     <section class="panel page-header">
-      <h1>anime</h1>
-      <p>anime I like, am watching, or want to finish.</p>
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>anime</h1>
+          <p>anime I like, am watching, or want to finish.</p>
+        </div>
+        <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 theme</button>
+      </div>
       <a class="pill" href="index.html"><span class="pill__icon">⌂</span><span>back to the main page</span></a>
     </section>
 
@@ -36,7 +44,6 @@
           <li>All Fate ones (especially unlimited blade works)</li>
         </ul>
 
-      <div class="card card--full">
         <h2>planning on watching</h2>
         <ul class="list">
           <li>DanDaDan</li>
@@ -48,14 +55,12 @@
           <li>Japanese Tales Of The Macabre</li>
         </ul>
 
-      <div class="card card--full">
         <h2>currently watching</h2>
         <ul class="list">
           <li>Mushoku Tensei</li>
           <li>Re:Zero latest season</li>
         </ul>
 
-      <div class="card card--full">
         <h2>have watched</h2>
         <ul class="list">
           <li>Cyberpunk edgerunners</li>
@@ -94,10 +99,8 @@
           <li>Tsukimichi: Moonlit Fantasy</li>
           <li>Swordgai</li>
           <li>Princess Connect! Re: Dive</li>
-
         </ul>
-      </div>
-      <div class="card card--full">
+
         <h2>silly</h2>
         <div class="gallery">
 <!--          <img src="assets/decor-5.gif" alt="anime page art 1" />

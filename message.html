@@ -1,10 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pid's guestbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yantramanav:wght@400;900&family=Cute+Font&family=Darumadrop+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
 
+  <main class="page page--simple">
+    <section class="panel page-header">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>leave a message</h1>
+          <p>drop a friendly note, greeting or image!</p>
+        </div>
+        <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 theme</button>
+      </div>
+      <a class="pill" href="index.html"><span class="pill__icon">⌂</span><span>back to the main page</span></a>
+    </section>
+
+    <section class="panel content-section">
+      <div class="card card--full">
+        <h2>sign the guestbook</h2>
+        
+        <form class="guestbook-form" id="guestbookForm">
+          <div>
+            <label class="form-label" for="msgAuthorInput">your name or alias:</label>
+            <input class="form-input" id="msgAuthorInput" type="text" placeholder="leave blank for anonymous sender" maxlength="30" />
+          </div>
+
+          <div>
+            <label class="form-label" for="msgBodyInput">message:</label>
+            <textarea class="form-textarea" id="msgBodyInput" placeholder="write something nice..." maxlength="500"></textarea>
+          </div>
+
+          <div class="file-upload-wrapper">
+            <label class="form-label" for="msgImageInput">upload an image (optional, jpeg or png up to 5mb):</label>
+            <label for="msgImageInput" class="file-upload-btn" id="uploadLabel">
+              <span>📷 choose image (jpg/png, max 5mb)</span>
+            </label>
+            <input type="file" id="msgImageInput" accept="image/png, image/jpeg" style="display:none;" />
+            
+            <div id="msgImagePreviewContainer" class="image-preview-container" style="display:none;">
+              <img id="msgImagePreview" class="image-preview" alt="Preview of attached image" />
+              <span id="msgImageFileName" style="font-family:'Space Mono', monospace; font-size:0.8rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:180px;"></span>
+              <button type="button" id="removeImgBtn" class="remove-img-btn">✕ remove</button>
+            </div>
+          </div>
+
+          <p id="formErrorMsg" style="display:none; color:#ff6b6b; font-family:'Space Mono', monospace; font-size:0.85rem; margin-top:2px;">
+            please write a message or upload an image!
+          </p>
+
+          <button class="btn-submit" type="submit">leave message! ✨</button>
+        </form>
+      </div>
+
+      <div class="card card--full">
+        <h2>messages (<span id="msgCount">0</span>)</h2>
+        <div class="messages-list" id="messagesList">
+          <!-- Populated by script.js with localStorage messages -->
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>

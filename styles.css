@@ -707,6 +707,46 @@ button.pill:focus-visible {
   gap: 14px;
 }
 
+.player-video-wrapper {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  aspect-ratio: 16 / 9;
+  max-height: 290px;
+}
+
+.player-video-embed {
+  width: 100%;
+  height: 100%;
+}
+
+.player-video-embed iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+#globalYtPlayerHost {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  height: 120px;
+  opacity: 0.01;
+  pointer-events: none;
+  z-index: -9999;
+}
+
+#globalYtPlayerHost iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .player-track-info {
   display: flex;
   align-items: center;

@@ -565,9 +565,38 @@ button.pill:focus-visible {
   padding: 18px;
 }
 
+/* Seamless unified card for subpages */
+.page--simple {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.page--simple > .panel {
+  box-shadow: none;
+}
+
+.page--simple .page-header {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 .page--simple .content-section {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/* Standalone detached sections on gimmicks draw page */
+.draw-page {
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.draw-page .page-header,
+.draw-page .content-section {
+  border-radius: 18px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
 }
 
 /* Interactive Music Player */

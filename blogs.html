@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pid's blogs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yantramanav:wght@400;900&family=Cute+Font&family=Darumadrop+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <canvas class="sparkle-canvas" id="sparkleCanvas" aria-hidden="true"></canvas>
+
+  <main class="page page--simple">
+    <section class="panel page-header">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h1>blogs</h1>
+          <p>thoughts, vents, news and journal entries.</p>
+        </div>
+        <button class="topbar__theme-btn" id="themeToggleBtn" type="button" title="Switch palette">🌙 dark mode</button>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+        <a class="pill" href="index.html"><span class="pill__icon">⌂</span><span>back to the main page</span></a>
+      </div>
+    </section>
+
+    <section class="panel content-section">
+      <!-- About the blog -->
+      <div class="card card--full" style="margin-bottom: 20px;">
+        <h2>about this blog</h2>
+        <p>welcome to my blog space! this is where I'm going to post occasional thoughts, updates on my projects, vents, news about me, and some random stuff I'm interested in. feel free to read through or leave a message in the guestbook!</p>
+      </div>
+
+      <!-- Blog Posts List -->
+      <div class="blog-posts-container">
+        
+        <!-- BLOG POST 1 -->
+        <article class="card card--full blog-card">
+          <header class="blog-card__header">
+            <div class="blog-card__meta">
+              <time class="blog-card__date" datetime="2026-09-29">September 29, 2026</time>
+              <div class="blog-card__tags">
+                <span class="blog-tag">#site</span>
+                <span class="blog-tag">#personal</span>
+              </div>
+            </div>
+            <h2 class="blog-card__title">First blog entry</h2>
+          </header>
+
+          <div class="blog-card__body">
+            <p>
+              welcome to my personal page !
+            </p>
+            <p>
+              I've added quite a few things about myself + some other cool stuff to the site I was able to do (a lot of the design/feature things I took inspiration from my old spacehey days and also from looking at other people's neocity and personal pages)
+            </p>
+            <p>
+              I will try to update this page weekly, or if I don't manage to do that- at least biweekly. I'm planning on adding more pages (every new page I do create, I will put them under silly stuff) and some more screenshots/clips under the games section, so check back sometimes!
+            </p>
+          </div>
+
+          <footer class="blog-card__footer">
+            <span class="blog-author-byline">— written by pid</span>
+          </footer>
+        </article>
+
+        <!-- TEMPLATE: HOW TO ADD A NEW POST -->
+        <!--
+        To add a new blog post, simply copy the block below and paste it above this comment:
+
+        <article class="card card--full blog-card">
+          <header class="blog-card__header">
+            <div class="blog-card__meta">
+              <time class="blog-card__date" datetime="YYYY-MM-DD">Month Day, Year</time>
+              <div class="blog-card__tags">
+                <span class="blog-tag">#tag1</span>
+                <span class="blog-tag">#tag2</span>
+              </div>
+            </div>
+            <h2 class="blog-card__title">Your Title Here</h2>
+          </header>
+          <div class="blog-card__body">
+            <p>Your content here...</p>
+          </div>
+          <footer class="blog-card__footer">
+            <span class="blog-author-byline">— written by pid</span>
+          </footer>
+        </article>
+        -->
+
+      </div>
+    </section>
+  </main>
+</body>
+</html>

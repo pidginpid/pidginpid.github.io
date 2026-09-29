@@ -79,6 +79,98 @@ a {
   text-decoration: none;
 }
 
+/* Standout styling for inline text & content links */
+p a,
+li a:not(.pill):not(.badge-pill),
+.news-item a:not(.news-box__blog-btn),
+.blog-card__body a,
+.about__box a:not(.badge-pill):not(.pill) {
+  color: var(--theme-accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 7px;
+  margin: 0 2px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: baseline;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Cute prefix icon for internal links */
+p a[href$=".html"]::before,
+p a[href*="message"]::before,
+p a[href*="gimmick"]::before,
+p a[href*="blogs"]::before,
+.news-item a[href$=".html"]::before,
+.news-item a[href*="message"]::before,
+.news-item a[href*="gimmick"]::before {
+  content: "♥";
+  font-size: 0.8em;
+  color: var(--theme-accent);
+  transition: transform 0.2s ease;
+}
+
+/* Hover effect */
+p a:hover,
+li a:not(.pill):not(.badge-pill):hover,
+.news-item a:not(.news-box__blog-btn):hover,
+.blog-card__body a:hover,
+.about__box a:not(.badge-pill):not(.pill):hover {
+  background: var(--theme-accent);
+  color: #120b22 !important;
+  border-color: var(--theme-accent);
+  text-decoration: none;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(192, 132, 252, 0.45);
+}
+
+p a:hover::before,
+.news-item a:hover::before {
+  color: #120b22 !important;
+  transform: scale(1.15);
+}
+
+/* Light mode adjustments */
+[data-theme="light"] p a,
+[data-theme="light"] .news-item a:not(.news-box__blog-btn),
+[data-theme="light"] .blog-card__body a,
+[data-theme="lavender"] p a,
+[data-theme="lavender"] .news-item a:not(.news-box__blog-btn),
+[data-theme="lavender"] .blog-card__body a {
+  background: rgba(83, 43, 136, 0.12);
+  border-color: rgba(83, 43, 136, 0.25);
+  color: #532b88;
+}
+
+[data-theme="light"] p a::before,
+[data-theme="light"] .news-item a::before,
+[data-theme="lavender"] p a::before,
+[data-theme="lavender"] .news-item a::before {
+  color: #532b88;
+}
+
+[data-theme="light"] p a:hover,
+[data-theme="light"] .news-item a:not(.news-box__blog-btn):hover,
+[data-theme="lavender"] p a:hover,
+[data-theme="lavender"] .news-item a:not(.news-box__blog-btn):hover {
+  background: #532b88;
+  color: #ffffff !important;
+  border-color: #532b88;
+  box-shadow: 0 4px 12px rgba(83, 43, 136, 0.35);
+}
+
+[data-theme="light"] p a:hover::before,
+[data-theme="lavender"] p a:hover::before {
+  color: #ffffff !important;
+}
+
 .page {
   max-width: 600px;
   margin: 0 auto;
@@ -1041,3 +1133,264 @@ button.pill:focus-visible {
     height: 340px;
   }
 }
+
+/* ==========================================
+   NEWS & CHANGELOG SECTION (index.html)
+   ========================================== */
+.news-box {
+  background: var(--theme-secondary);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.news-box__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.news-box__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.news-box__icon {
+  font-size: 1.25rem;
+}
+
+.news-box__heading {
+  font-family: 'Darumadrop One', cursive;
+  font-size: 1.6rem;
+  letter-spacing: 0.5px;
+  color: var(--theme-text);
+  line-height: 1;
+}
+
+.news-box__blog-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--theme-surface-deep);
+  color: var(--theme-text);
+  text-decoration: none;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.news-box__blog-btn:hover {
+  background: var(--theme-accent);
+  color: #120b22;
+  transform: translateX(2px);
+}
+
+.news-box__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Custom scrollbar for news list */
+.news-box__list::-webkit-scrollbar {
+  width: 5px;
+}
+.news-box__list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+.news-box__list::-webkit-scrollbar-thumb {
+  background: var(--theme-accent);
+  border-radius: 4px;
+}
+
+.news-item {
+  background: var(--theme-surface);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.news-item:hover {
+  transform: translateY(-1px);
+  background: var(--theme-surface-deep);
+}
+
+.news-item__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.news-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+}
+
+.news-badge--added {
+  background: rgba(52, 211, 153, 0.22);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.news-badge--updated {
+  background: rgba(167, 139, 250, 0.22);
+  color: #c4b5fd;
+  border: 1px solid rgba(167, 139, 250, 0.4);
+}
+
+.news-badge--removed {
+  background: rgba(248, 113, 113, 0.22);
+  color: #fca5a5;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.news-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  opacity: 0.75;
+  color: var(--theme-text);
+}
+
+.news-headline {
+  font-family: 'Darumadrop One', cursive;
+  font-size: 1.15rem;
+  color: var(--theme-text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.news-desc {
+  font-size: 0.88rem;
+  color: var(--theme-text);
+  opacity: 0.92;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.news-inline-link {
+  color: var(--theme-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ==========================================
+   BLOGS PAGE STYLES (blogs.html)
+   ========================================== */
+.blog-posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.blog-card {
+  padding: 20px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.blog-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 10px;
+}
+
+.blog-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.blog-card__date {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.82rem;
+  opacity: 0.8;
+  color: var(--theme-text);
+}
+
+.blog-card__tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.blog-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  background: var(--theme-surface-deep);
+  color: var(--theme-accent);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.blog-card__title {
+  font-family: 'Darumadrop One', cursive;
+  font-size: 1.65rem;
+  color: var(--theme-text);
+  line-height: 1.25;
+  margin: 0;
+}
+
+.blog-card__body {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--theme-text);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.blog-quote {
+  border-left: 3px solid var(--theme-accent);
+  padding: 8px 14px;
+  margin: 4px 0;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 0 8px 8px 0;
+  font-family: 'Cute Font', cursive;
+  font-size: 1.45rem;
+  color: var(--theme-text);
+}
+
+.blog-card__footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 6px;
+  font-family: 'Cute Font', cursive;
+  font-size: 1.25rem;
+  opacity: 0.85;
+}
+

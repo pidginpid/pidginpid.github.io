@@ -1,21 +1,25 @@
 // pid's site interactive logic & features
 
 // ==========================================
-// 1. THEME SWITCHER (midnight default, lavender alternative)
+// 1. THEME SWITCHER (dark mode default, light mode alternative)
 // ==========================================
 const THEMES = [
-  { id: 'midnight', label: '🌙 midnight' },
-  { id: 'lavender', label: '🌸 lavender' }
+  { id: 'dark', label: '🌙 dark mode' },
+  { id: 'light', label: '☀️ light mode' }
 ];
 
 function initTheme() {
-  const savedTheme = localStorage.getItem('pid_theme') || 'midnight';
+  let savedTheme = localStorage.getItem('pid_theme') || 'dark';
+  if (savedTheme === 'midnight') savedTheme = 'dark';
+  if (savedTheme === 'lavender') savedTheme = 'light';
   applyTheme(savedTheme);
 
   const themeBtns = document.querySelectorAll('.topbar__theme-btn');
   themeBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const current = document.documentElement.getAttribute('data-theme') || 'midnight';
+      let current = document.documentElement.getAttribute('data-theme') || 'dark';
+      if (current === 'midnight') current = 'dark';
+      if (current === 'lavender') current = 'light';
       const currentIndex = THEMES.findIndex((t) => t.id === current);
       const nextTheme = THEMES[(currentIndex + 1) % THEMES.length];
       applyTheme(nextTheme.id);
@@ -137,35 +141,35 @@ const PLAYLIST = [
     artist: 'TUYU ・ J-Rock',
     duration: '3:26',
     durationSec: 206,
+    url: 'https://youtu.be/TBoBfT-_sfM'
+  },
+  {
+    title: 'Mili - In Hell We Live, Lament feat. KIHOW from MYTH & ROID / Limbus Company',
+    artist: 'Mili ・ J-Pop',
+    duration: '3:45',
+    durationSec: 225,
     url: ''
   },
   {
-    title: 'YOASOBI - Racing Into the Night',
-    artist: 'YOASOBI ・ J-Pop',
-    duration: '4:21',
-    durationSec: 261,
-    url: ''
+    title: 'Aiobahn +81 feat. ななひら & P丸様。- 天天天国地獄国 (Official Music Video)',
+    artist: 'Aiobahn ・ J-Pop',
+    duration: '3:53',
+    durationSec: 233,
+    url: 'https://youtu.be/eTplxWaAD8o'
   },
   {
-    title: 'Eve - Kaikai Kitan',
-    artist: 'Eve ・ J-Rock',
-    duration: '3:41',
-    durationSec: 221,
-    url: ''
+    title: '謳',
+    artist: 'Imperial Circus Dead Decadence ・ Symphonic Death Metal',
+    duration: '9:02',
+    durationSec: 542,
+    url: 'https://youtu.be/x8i6A-k2ShY'
   },
   {
-    title: 'ZUTOMAYO - Kan Saete Kuyashiiwa',
-    artist: 'ZUTOMAYO ・ J-Pop',
-    duration: '3:55',
-    durationSec: 235,
-    url: ''
-  },
-  {
-    title: 'Lo-Fi Chill Beats',
-    artist: 'Study / Gaming Session',
+    title: 'TUYU - Hide and Seek Alone MV',
+    artist: 'TUYU ・ J-Rock',
     duration: '2:50',
     durationSec: 170,
-    url: ''
+    url: 'https://youtu.be/Bq0ZINOzVng'
   }
 ];
 
@@ -467,15 +471,19 @@ function initSparkles() {
 // 5. FIREBASE HELPER (Supports Live Firestore & Local Fallback)
 // ==========================================
 function getFirebaseDb() {
+  const cfg =
+    (typeof window !== 'undefined' && (window.FIREBASE_CONFIG || window.firebaseConfig)) ||
+    (typeof firebaseConfig !== 'undefined' ? firebaseConfig : null);
+
   if (
     typeof firebase !== 'undefined' &&
-    window.FIREBASE_CONFIG &&
-    window.FIREBASE_CONFIG.apiKey &&
-    window.FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY'
+    cfg &&
+    cfg.apiKey &&
+    cfg.apiKey !== 'YOUR_API_KEY'
   ) {
     try {
       if (!firebase.apps.length) {
-        firebase.initializeApp(window.FIREBASE_CONFIG);
+        firebase.initializeApp(cfg);
       }
       return firebase.firestore();
     } catch (err) {

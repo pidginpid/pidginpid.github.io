@@ -4,6 +4,7 @@
 }
 
 :root,
+[data-theme="dark"],
 [data-theme="midnight"] {
   --theme-bg-gradient: linear-gradient(rgba(18, 12, 38, 0.72), rgba(18, 12, 38, 0.72));
   --theme-primary: #27144e;
@@ -17,6 +18,7 @@
   --theme-border: #7e22ce;
 }
 
+[data-theme="light"],
 [data-theme="lavender"] {
   --theme-bg-gradient: linear-gradient(rgba(255,255,255,.18), rgba(255,255,255,.18));
   --theme-primary: #532b88;

@@ -4,8 +4,8 @@
 // 1. THEME SWITCHER (dark mode default, light mode alternative)
 // ==========================================
 const THEMES = [
-  { id: 'dark', label: '🌙 dark mode' },
-  { id: 'light', label: '☀️ light mode' }
+  { id: 'dark', label: 'dark mode' },
+  { id: 'light', label: 'light mode' }
 ];
 
 function initTheme() {
@@ -196,64 +196,71 @@ class AudioController {
     });
   }
 
-  initYouTube() {
-    if (this.ytPlayer) return;
-
-    let targetElId = 'playerVideoEmbed';
-    const embedEl = document.getElementById('playerVideoEmbed');
-
-    if (!embedEl) {
-      let bgHost = document.getElementById('globalYtPlayerHost');
-      if (!bgHost) {
-        bgHost = document.createElement('div');
-        bgHost.id = 'globalYtPlayerHost';
-        document.body.appendChild(bgHost);
-      }
-      targetElId = 'globalYtPlayerHost';
+  initYouTube(onDone) {
+    if (this.ytPlayer) {
+      if (onDone) onDone();
+      return;
     }
 
-    const firstTrack = PLAYLIST[this.currentIndex] || PLAYLIST[0];
-    const initialId = extractYouTubeId(firstTrack ? firstTrack.url : '') || 'TBoBfT-_sfM';
+    ensureYouTubeApi(() => {
+      let targetElId = 'playerVideoEmbed';
+      const embedEl = document.getElementById('playerVideoEmbed');
 
-    try {
-      this.ytPlayer = new window.YT.Player(targetElId, {
-        height: '100%',
-        width: '100%',
-        videoId: initialId,
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          playsinline: 1,
-          rel: 0,
-          modestbranding: 1
-        },
-        events: {
-          onReady: () => {
-            this.isYtReady = true;
-            if (this.pendingPlayIndex !== null) {
-              const idxToPlay = this.pendingPlayIndex;
-              this.pendingPlayIndex = null;
-              this.play(idxToPlay);
-            }
+      if (!embedEl) {
+        let bgHost = document.getElementById('globalYtPlayerHost');
+        if (!bgHost) {
+          bgHost = document.createElement('div');
+          bgHost.id = 'globalYtPlayerHost';
+          document.body.appendChild(bgHost);
+        }
+        targetElId = 'globalYtPlayerHost';
+      }
+
+      const firstTrack = PLAYLIST[this.currentIndex] || PLAYLIST[0];
+      const initialId = extractYouTubeId(firstTrack ? firstTrack.url : '') || 'TBoBfT-_sfM';
+
+      try {
+        this.ytPlayer = new window.YT.Player(targetElId, {
+          host: 'https://www.youtube-nocookie.com',
+          height: '100%',
+          width: '100%',
+          videoId: initialId,
+          playerVars: {
+            autoplay: 0,
+            controls: 1,
+            playsinline: 1,
+            rel: 0,
+            modestbranding: 1
           },
-          onStateChange: (event) => {
-            if (event.data === window.YT.PlayerState.PLAYING) {
-              this.isPlaying = true;
-              this.startProgressTimer();
-              this.notifyUpdate();
-            } else if (event.data === window.YT.PlayerState.PAUSED) {
-              this.isPlaying = false;
-              this.stopProgressTimer();
-              this.notifyUpdate();
-            } else if (event.data === window.YT.PlayerState.ENDED) {
-              this.next();
+          events: {
+            onReady: () => {
+              this.isYtReady = true;
+              if (this.pendingPlayIndex !== null) {
+                const idxToPlay = this.pendingPlayIndex;
+                this.pendingPlayIndex = null;
+                this.play(idxToPlay);
+              }
+              if (onDone) onDone();
+            },
+            onStateChange: (event) => {
+              if (event.data === window.YT.PlayerState.PLAYING) {
+                this.isPlaying = true;
+                this.startProgressTimer();
+                this.notifyUpdate();
+              } else if (event.data === window.YT.PlayerState.PAUSED) {
+                this.isPlaying = false;
+                this.stopProgressTimer();
+                this.notifyUpdate();
+              } else if (event.data === window.YT.PlayerState.ENDED) {
+                this.next();
+              }
             }
           }
-        }
-      });
-    } catch (e) {
-      console.warn('YT Player creation deferred/fallback:', e);
-    }
+        });
+      } catch (e) {
+        console.warn('YT Player creation deferred/fallback:', e);
+      }
+    });
   }
 
   stopAllAudio() {
@@ -333,6 +340,7 @@ class AudioController {
         this.pendingPlayIndex = index;
         this.isPlaying = true;
         this.startProgressTimer();
+        this.initYouTube();
       }
     } else if (track.url) {
       this.isUsingHtmlAudio = true;
@@ -464,10 +472,24 @@ class AudioController {
 
 const globalPlayer = new AudioController();
 
-// Dynamically load YouTube IFrame API
-(function loadYouTubeApi() {
-  if (!window.YT) {
+// On-demand YouTube IFrame API loader (Privacy-preserving: only loads when user plays music)
+function ensureYouTubeApi(callback) {
+  if (window.YT && window.YT.Player) {
+    if (callback) callback();
+    return;
+  }
+
+  const existingReady = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = function() {
+    if (typeof existingReady === 'function') {
+      try { existingReady(); } catch (_) {}
+    }
+    if (callback) callback();
+  };
+
+  if (!document.getElementById('ytIframeApiScript')) {
     const tag = document.createElement('script');
+    tag.id = 'ytIframeApiScript';
     tag.src = 'https://www.youtube.com/iframe_api';
     const firstScript = document.getElementsByTagName('script')[0];
     if (firstScript && firstScript.parentNode) {
@@ -476,18 +498,11 @@ const globalPlayer = new AudioController();
       document.head.appendChild(tag);
     }
   }
-})();
-
-window.onYouTubeIframeAPIReady = function() {
-  globalPlayer.initYouTube();
-};
-
-if (window.YT && window.YT.Player) {
-  globalPlayer.initYouTube();
 }
 
 function initMusicPlayer() {
-  if (window.YT && window.YT.Player) {
+  // Only pre-mount player if on music.html (where the video container exists)
+  if (document.getElementById('playerVideoEmbed')) {
     globalPlayer.initYouTube();
   }
 
@@ -670,6 +685,8 @@ function initGuestbook() {
   const form = document.getElementById('guestbookForm');
   const messagesList = document.getElementById('messagesList');
   const countEl = document.getElementById('msgCount');
+  const authorInput = document.getElementById('msgAuthorInput');
+  const bodyInput = document.getElementById('msgBodyInput');
   const imageInput = document.getElementById('msgImageInput');
   const previewContainer = document.getElementById('msgImagePreviewContainer');
   const previewImg = document.getElementById('msgImagePreview');
@@ -678,6 +695,23 @@ function initGuestbook() {
   const formErrorMsg = document.getElementById('formErrorMsg');
 
   if (!messagesList) return;
+
+  // Restore unsaved message drafts from browser memory so refresh never loses typing!
+  if (bodyInput) {
+    const savedDraftBody = localStorage.getItem('pid_guestbook_draft_body');
+    if (savedDraftBody) bodyInput.value = savedDraftBody;
+    bodyInput.addEventListener('input', () => {
+      localStorage.setItem('pid_guestbook_draft_body', bodyInput.value);
+    });
+  }
+
+  if (authorInput) {
+    const savedDraftAuthor = localStorage.getItem('pid_guestbook_draft_author');
+    if (savedDraftAuthor) authorInput.value = savedDraftAuthor;
+    authorInput.addEventListener('input', () => {
+      localStorage.setItem('pid_guestbook_draft_author', authorInput.value);
+    });
+  }
 
   const db = getFirebaseDb();
   let currentImageData = null;
@@ -765,8 +799,8 @@ function initGuestbook() {
       const file = e.target.files[0];
       if (!file) return;
 
-      if (!file.type.match(/^image\/(png|jpeg|jpg)$/)) {
-        alert('Please choose a valid PNG or JPEG image!');
+      if (!file.type.match(/^image\/(png|jpeg|jpg|gif)$/)) {
+        alert('Please choose a valid PNG, JPEG, or GIF image!');
         imageInput.value = '';
         return;
       }
@@ -852,6 +886,8 @@ function initGuestbook() {
       if (imageInput) imageInput.value = '';
       if (previewContainer) previewContainer.style.display = 'none';
       currentImageData = null;
+      localStorage.removeItem('pid_guestbook_draft_body');
+      localStorage.removeItem('pid_guestbook_draft_author');
     });
   }
 }
@@ -1193,6 +1229,59 @@ function escapeHtml(str) {
 }
 
 // ==========================================
+// ZERO-COOKIE PRIVACY-FRIENDLY VISITOR COUNTER
+// ==========================================
+function initVisitorCounter() {
+  const counterEl = document.getElementById('visitorCount');
+  if (!counterEl) return;
+
+  function formatCount(num) {
+    return String(num).padStart(6, '0');
+  }
+
+  // Uses purely in-memory browser tab storage (sessionStorage).
+  // NO cookies are ever created, stored, or sent to any server.
+  const hasVisitedThisSession = sessionStorage.getItem('pid_visited_session');
+
+  if (!hasVisitedThisSession) {
+    // First time in this session: increment counter by 1
+    fetch('/api/visits', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        sessionStorage.setItem('pid_visited_session', 'true');
+        if (data && typeof data.count === 'number') {
+          counterEl.textContent = formatCount(data.count);
+        }
+      })
+      .catch(() => {
+        fallbackCount(true);
+      });
+  } else {
+    // Already counted in this session: fetch current count without incrementing
+    fetch('/api/visits')
+      .then(res => res.json())
+      .then(data => {
+        if (data && typeof data.count === 'number') {
+          counterEl.textContent = formatCount(data.count);
+        }
+      })
+      .catch(() => {
+        fallbackCount(false);
+      });
+  }
+
+  function fallbackCount(shouldIncrement) {
+    let localCount = parseInt(localStorage.getItem('pid_local_visits') || '42', 10);
+    if (shouldIncrement) {
+      localCount++;
+      localStorage.setItem('pid_local_visits', String(localCount));
+      sessionStorage.setItem('pid_visited_session', 'true');
+    }
+    counterEl.textContent = formatCount(localCount);
+  }
+}
+
+// ==========================================
 // INITIALIZATION ON DOM READY
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1202,4 +1291,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initSparkles();
   initGuestbook();
   initDrawingGimmick();
+  initVisitorCounter();
 });

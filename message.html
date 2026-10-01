@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="script.js" defer></script>
 </head>
@@ -45,9 +46,9 @@
           </div>
 
           <div class="file-upload-wrapper">
-            <label class="form-label" for="msgImageInput">upload an image or GIF (optional, jpg/png/gif up to 5mb):</label>
+            <label class="form-label" for="msgImageInput">upload an image or GIF (optional, up to 15MB):</label>
             <label for="msgImageInput" class="file-upload-btn" id="uploadLabel">
-              <span>📷 choose image / GIF (jpg/png/gif, max 5mb)</span>
+              <span>📷 choose image / GIF (jpg/png/gif, max 15MB)</span>
             </label>
             <input type="file" id="msgImageInput" accept="image/png, image/jpeg, image/gif" style="display:none;" />
             
@@ -58,11 +59,15 @@
             </div>
           </div>
 
-          <p id="formErrorMsg" style="display:none; color:#ff6b6b; font-family:'Space Mono', monospace; font-size:0.85rem; margin-top:2px;">
+          <p id="formErrorMsg" style="display:none; color:#ff6b6b; font-family:'Space Mono', monospace; font-size:0.85rem; margin-top:4px; line-height:1.4;">
             please write a message or upload an image!
           </p>
 
-          <button class="btn-submit" type="submit">leave message! ✨</button>
+          <p id="cooldownNotice" style="display:none; color:var(--accent, #ffd166); font-family:'Space Mono', monospace; font-size:0.85rem; margin-top:4px; line-height:1.4;">
+            ⏳ rate limit: you are on cooldown. please wait <span id="cooldownTimer">30</span>s before posting again.
+          </p>
+
+          <button class="btn-submit" id="guestbookSubmitBtn" type="submit">leave message! ✨</button>
         </form>
       </div>
 

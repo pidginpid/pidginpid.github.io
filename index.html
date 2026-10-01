@@ -11,6 +11,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Yantramanav:wght@400;900&family=Cute+Font&family=Darumadrop+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -46,7 +49,7 @@
             </div>
             <div class="hero__extra">
               <p class="hero__discord">discord: ostaisa</p>
-              <div class="visitor-counter" id="visitorCounter" title="Zero-cookie privacy-friendly visitor counter">
+              <div class="visitor-counter" id="visitorCounter" title="Hi meow">
                 <span class="visitor-icon">★</span>
                 <span class="visitor-label">visits:</span>
                 <span class="visitor-num" id="visitorCount">000042</span>
@@ -59,19 +62,17 @@
           </div>
 
           <!-- News & Changelog Section -->
-          <section class="news-box" id="newsSection" aria-label="Website news and changelog">
-            <div class="news-box__header">
-              <div class="news-box__title">
-                <span class="news-box__icon"></span>
-                <h2 class="news-box__heading">news</h2>
-              </div>
-              <a class="news-box__blog-btn" href="blogs.html" title="View blogs">
-                <span>📝 read blogs</span>
-                <span class="news-arrow">→</span>
-              </a>
-            </div>
 
             <div class="news-box__list">
+
+            <article class="news-item">
+              <div class="news-item__top">
+                <span class="news-badge news-badge--updated">updated</span>
+                <time class="news-date">Oct 2, 2026</time>
+              </div>
+              <h3 class="news-headline">file uploads and visitor counter fix</h3>
+              <p class="news-desc">I found out file uploads were glitched because of an issue with the database but that should be fixed now and I increased the size for guestbook file uploads to up to 15mb even. Visitor counter was also broken lol it was counting locally only and not updating for everyone, so not it should be working too (I say hopefully since I literally don't know how to test these features w/o uploading them and letting people try but BELIEVEE)</p>
+            </article>
 
             <article class="news-item">
               <div class="news-item__top">

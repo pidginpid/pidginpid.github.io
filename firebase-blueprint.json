@@ -41,6 +41,22 @@
         }
       },
       "required": ["dataUrl", "createdAt"]
+    },
+    "SiteStats": {
+      "title": "Site Stats",
+      "description": "Global visitor counter and site analytics",
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "number",
+          "description": "Total visits count"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "Timestamp of last visit increment"
+        }
+      },
+      "required": ["count"]
     }
   },
   "firestore": {
@@ -55,6 +71,12 @@
         "$ref": "#/entities/Doodle"
       },
       "description": "Public visitor doodles"
+    },
+    "/stats/{statId}": {
+      "schema": {
+        "$ref": "#/entities/SiteStats"
+      },
+      "description": "Global visitor statistics"
     }
   }
 }

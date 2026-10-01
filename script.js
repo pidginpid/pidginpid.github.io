@@ -671,6 +671,31 @@ function getFirebaseDb() {
   return null;
 }
 
+function getFirebaseStorage() {
+  const cfg =
+    (typeof window !== 'undefined' && (window.FIREBASE_CONFIG || window.firebaseConfig)) ||
+    (typeof firebaseConfig !== 'undefined' ? firebaseConfig : null);
+
+  if (
+    typeof firebase !== 'undefined' &&
+    typeof firebase.storage === 'function' &&
+    cfg &&
+    cfg.apiKey &&
+    cfg.apiKey !== 'YOUR_API_KEY'
+  ) {
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(cfg);
+      }
+      return firebase.storage();
+    } catch (err) {
+      console.warn('Firebase Storage init warning:', err);
+      return null;
+    }
+  }
+  return null;
+}
+
 // One-time cleanup of any legacy test messages or doodles to ensure a fresh 0-item state
 if (typeof localStorage !== 'undefined' && localStorage.getItem('pid_clean_reset_v3') !== 'done') {
   localStorage.removeItem('pid_guestbook_messages');
@@ -714,7 +739,9 @@ function initGuestbook() {
   }
 
   const db = getFirebaseDb();
+  const storage = getFirebaseStorage();
   let currentImageData = null;
+  let currentFile = null;
 
   function loadLocalMessages() {
     try {
@@ -766,6 +793,19 @@ function initGuestbook() {
     });
   }
 
+  function showFormError(msg) {
+    if (formErrorMsg) {
+      formErrorMsg.textContent = msg;
+      formErrorMsg.style.display = 'block';
+    }
+  }
+
+  function clearFormError() {
+    if (formErrorMsg) {
+      formErrorMsg.style.display = 'none';
+    }
+  }
+
   // Connect to Firestore real-time listener if configured
   if (db) {
     try {
@@ -778,11 +818,13 @@ function initGuestbook() {
             snapshot.forEach((doc) => {
               msgs.push({ id: doc.id, ...doc.data() });
             });
+            saveLocalMessages(msgs);
             renderMessagesList(msgs);
           },
           (err) => {
             console.warn('Firestore subscription failed, falling back to local storage:', err);
-            renderMessagesList(loadLocalMessages());
+            const cached = loadLocalMessages();
+            renderMessagesList(cached);
           }
         );
     } catch (e) {
@@ -793,32 +835,45 @@ function initGuestbook() {
     renderMessagesList(loadLocalMessages());
   }
 
-  // Handle image upload with 5MB validation
+  // Handle image/GIF upload (supports up to 15MB with Firebase Cloud Storage)
   if (imageInput) {
     imageInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      if (!file.type.match(/^image\/(png|jpeg|jpg|gif)$/)) {
-        alert('Please choose a valid PNG, JPEG, or GIF image!');
+      const fileName = file.name.toLowerCase();
+      const isGif = file.type === 'image/gif' || fileName.endsWith('.gif');
+      const isPngOrJpg = file.type.match(/^image\/(png|jpeg|jpg)$/) || fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
+
+      if (!isGif && !isPngOrJpg) {
+        showFormError('Please choose a valid PNG, JPEG, or GIF image!');
         imageInput.value = '';
+        currentFile = null;
         return;
       }
 
-      const MAX_BYTES = 5 * 1024 * 1024;
+      const MAX_BYTES = 15 * 1024 * 1024; // 15MB
       if (file.size > MAX_BYTES) {
-        alert('File size exceeds the 5MB limit. Please choose a smaller image!');
+        showFormError('File size exceeds the 15MB limit. Please choose a smaller image or GIF!');
         imageInput.value = '';
+        currentFile = null;
         return;
       }
 
+      currentFile = file;
+      clearFormError();
+
+      // Read for local preview
       const reader = new FileReader();
       reader.onload = (event) => {
         currentImageData = event.target.result;
         if (previewImg) previewImg.src = currentImageData;
         if (fileNameSpan) fileNameSpan.textContent = file.name;
         if (previewContainer) previewContainer.style.display = 'flex';
-        if (formErrorMsg) formErrorMsg.style.display = 'none';
+        clearFormError();
+      };
+      reader.onerror = () => {
+        showFormError('Could not read the selected file. Please try again.');
       };
       reader.readAsDataURL(file);
     });
@@ -827,26 +882,99 @@ function initGuestbook() {
   if (removeImgBtn) {
     removeImgBtn.addEventListener('click', () => {
       currentImageData = null;
+      currentFile = null;
       if (imageInput) imageInput.value = '';
       if (previewContainer) previewContainer.style.display = 'none';
+      clearFormError();
     });
+  }
+
+  // ==========================================
+  // Guestbook Rate Limiting & Cooldown (30s)
+  // ==========================================
+  const COOLDOWN_SECONDS = 30;
+  const COOLDOWN_STORAGE_KEY = 'pid_guestbook_last_submit';
+  const submitBtn = document.getElementById('guestbookSubmitBtn') || (form ? form.querySelector('button[type="submit"]') : null);
+  const cooldownNotice = document.getElementById('cooldownNotice');
+  const cooldownTimer = document.getElementById('cooldownTimer');
+  let cooldownTimerInterval = null;
+
+  function getRemainingCooldown() {
+    const lastTime = parseInt(localStorage.getItem(COOLDOWN_STORAGE_KEY) || '0', 10);
+    const elapsedSeconds = Math.floor((Date.now() - lastTime) / 1000);
+    return Math.max(0, COOLDOWN_SECONDS - elapsedSeconds);
+  }
+
+  function updateCooldownState() {
+    const remaining = getRemainingCooldown();
+    if (remaining > 0) {
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = `cooldown (${remaining}s) ⏳`;
+      }
+      if (cooldownNotice && cooldownTimer) {
+        cooldownTimer.textContent = remaining;
+        cooldownNotice.style.display = 'block';
+      }
+      return true;
+    } else {
+      if (cooldownTimerInterval) {
+        clearInterval(cooldownTimerInterval);
+        cooldownTimerInterval = null;
+      }
+      if (submitBtn && submitBtn.disabled && submitBtn.textContent.includes('cooldown')) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'leave message! ✨';
+      }
+      if (cooldownNotice) {
+        cooldownNotice.style.display = 'none';
+      }
+      return false;
+    }
+  }
+
+  function startCooldown() {
+    localStorage.setItem(COOLDOWN_STORAGE_KEY, Date.now().toString());
+    if (cooldownTimerInterval) clearInterval(cooldownTimerInterval);
+    updateCooldownState();
+    cooldownTimerInterval = setInterval(updateCooldownState, 1000);
+  }
+
+  // Check cooldown on page load
+  if (updateCooldownState()) {
+    cooldownTimerInterval = setInterval(updateCooldownState, 1000);
   }
 
   // Handle Form Submit
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const authorInput = document.getElementById('msgAuthorInput');
-      const bodyInput = document.getElementById('msgBodyInput');
 
-      let author = authorInput ? authorInput.value.trim() : '';
-      const body = bodyInput ? bodyInput.value.trim() : '';
-
-      if (!body && !currentImageData) {
-        if (formErrorMsg) formErrorMsg.style.display = 'block';
+      // Check anti-spam cooldown first
+      const remainingCooldown = getRemainingCooldown();
+      if (remainingCooldown > 0) {
+        showFormError(`Rate limit: You are on cooldown! Please wait ${remainingCooldown}s before posting another message.`);
+        updateCooldownState();
         return;
       }
-      if (formErrorMsg) formErrorMsg.style.display = 'none';
+
+      let author = authorInput ? authorInput.value.trim().slice(0, 30) : '';
+      const body = bodyInput ? bodyInput.value.trim().slice(0, 500) : '';
+
+      if (!body && !currentFile && !currentImageData) {
+        showFormError('please write a message or upload an image!');
+        return;
+      }
+
+      // Check duplicate message spam within 3 minutes
+      const lastBody = localStorage.getItem('pid_guestbook_last_body');
+      const lastBodyTime = parseInt(localStorage.getItem('pid_guestbook_last_body_time') || '0', 10);
+      if (body && lastBody === body && Date.now() - lastBodyTime < 180000) {
+        showFormError('You already posted this exact message! Please write something different.');
+        return;
+      }
+
+      clearFormError();
 
       if (!author) {
         author = 'anonymous sender';
@@ -856,38 +984,109 @@ function initGuestbook() {
       const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
       const dateStr = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
 
-      const newMsg = {
-        author,
-        date: dateStr,
-        body,
-        image: currentImageData || null,
-        createdAt: now.toISOString()
-      };
-
-      if (db) {
-        db.collection('messages')
-          .add(newMsg)
-          .catch((err) => {
-            console.warn('Firestore write failed, falling back to local:', err);
-            const msgs = loadLocalMessages();
-            msgs.unshift(newMsg);
-            saveLocalMessages(msgs);
-            renderMessagesList(msgs);
-          });
-      } else {
-        const msgs = loadLocalMessages();
-        msgs.unshift(newMsg);
-        saveLocalMessages(msgs);
-        renderMessagesList(msgs);
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'posting message... ✨';
       }
 
-      if (authorInput) authorInput.value = '';
-      if (bodyInput) bodyInput.value = '';
-      if (imageInput) imageInput.value = '';
-      if (previewContainer) previewContainer.style.display = 'none';
-      currentImageData = null;
-      localStorage.removeItem('pid_guestbook_draft_body');
-      localStorage.removeItem('pid_guestbook_draft_author');
+      function onPostSuccess() {
+        if (authorInput) authorInput.value = '';
+        if (bodyInput) bodyInput.value = '';
+        if (imageInput) imageInput.value = '';
+        if (previewContainer) previewContainer.style.display = 'none';
+        currentImageData = null;
+        currentFile = null;
+        localStorage.removeItem('pid_guestbook_draft_body');
+        localStorage.removeItem('pid_guestbook_draft_author');
+        if (body) {
+          localStorage.setItem('pid_guestbook_last_body', body);
+          localStorage.setItem('pid_guestbook_last_body_time', Date.now().toString());
+        }
+        clearFormError();
+
+        // Start anti-spam cooldown countdown
+        startCooldown();
+      }
+
+      function onPostFailure(err) {
+        console.error('Submission error:', err);
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'leave message! ✨';
+        }
+
+        const errStr = String(err && (err.message || err.code || err));
+        let userMsg = 'Could not post message: ';
+
+        if (errStr.includes('longer than 1048487 bytes') || errStr.includes('exceeds')) {
+          userMsg = 'Attached image is too large for database limits. Please remove or use a smaller image/GIF.';
+        } else if (errStr.includes('storage/unauthorized') || errStr.includes('Permission denied')) {
+          userMsg = 'Cloud Storage permission denied. Please verify that your Firebase Storage Rules allow uploads.';
+        } else if (errStr.includes('BLOCKED_BY_CLIENT') || errStr.includes('unavailable') || !navigator.onLine) {
+          userMsg = 'Database connection blocked (ERR_BLOCKED_BY_CLIENT). If you are using an ad-blocker or Brave Shields, please pause it for this website to post messages!';
+        } else {
+          userMsg += (err.message || 'Please check your connection and try again.');
+        }
+
+        showFormError(userMsg);
+      }
+
+      async function uploadAndSave() {
+        let imageUrl = null;
+
+        // Step 1: Upload to Firebase Cloud Storage if an image or GIF was attached
+        if (currentFile && storage) {
+          if (submitBtn) submitBtn.textContent = 'uploading to cloud storage... ☁️';
+          const safeName = currentFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const storagePath = `guestbook/${Date.now()}_${Math.random().toString(36).slice(2, 7)}_${safeName}`;
+          const fileRef = storage.ref().child(storagePath);
+
+          try {
+            const uploadSnapshot = await fileRef.put(currentFile, {
+              contentType: currentFile.type || 'image/png'
+            });
+            imageUrl = await uploadSnapshot.ref.getDownloadURL();
+          } catch (storageErr) {
+            console.warn('Firebase Storage upload failed, attempting fallback:', storageErr);
+            // If Cloud Storage fails (e.g. storage rules not deployed yet), fallback to inline base64 only if small (<800KB)
+            if (currentImageData && currentImageData.length < 800000) {
+              imageUrl = currentImageData;
+            } else {
+              throw storageErr;
+            }
+          }
+        } else if (currentImageData) {
+          if (currentImageData.length > 950000) {
+            throw new Error('Image exceeds 1MB without Cloud Storage. Please enable Firebase Cloud Storage or choose a smaller file.');
+          }
+          imageUrl = currentImageData;
+        }
+
+        if (submitBtn) submitBtn.textContent = 'saving message... ✨';
+
+        const newMsg = {
+          author,
+          date: dateStr,
+          body,
+          image: imageUrl || null,
+          createdAt: now.toISOString()
+        };
+
+        if (db) {
+          await db.collection('messages').add(newMsg);
+        } else {
+          const msgs = loadLocalMessages();
+          msgs.unshift(newMsg);
+          saveLocalMessages(msgs);
+          renderMessagesList(msgs);
+        }
+
+        onPostSuccess();
+      }
+
+      uploadAndSave().catch((err) => {
+        onPostFailure(err);
+      });
     });
   }
 }
@@ -1179,9 +1378,71 @@ function initDrawingGimmick() {
     });
   }
 
+  // ==========================================
+  // Doodle Rate Limiting & Cooldown (20s)
+  // ==========================================
+  const DOODLE_COOLDOWN_SEC = 20;
+  const DOODLE_COOLDOWN_KEY = 'pid_doodle_last_submit';
+  const doodleNotice = document.getElementById('doodleCooldownNotice');
+  const doodleTimer = document.getElementById('doodleCooldownTimer');
+  let doodleTimerInterval = null;
+
+  function getRemainingDoodleCooldown() {
+    const lastTime = parseInt(localStorage.getItem(DOODLE_COOLDOWN_KEY) || '0', 10);
+    const elapsedSeconds = Math.floor((Date.now() - lastTime) / 1000);
+    return Math.max(0, DOODLE_COOLDOWN_SEC - elapsedSeconds);
+  }
+
+  function updateDoodleCooldownState() {
+    const remaining = getRemainingDoodleCooldown();
+    if (remaining > 0) {
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = `cooldown (${remaining}s) ⏳`;
+      }
+      if (doodleNotice && doodleTimer) {
+        doodleTimer.textContent = remaining;
+        doodleNotice.style.display = 'block';
+      }
+      return true;
+    } else {
+      if (doodleTimerInterval) {
+        clearInterval(doodleTimerInterval);
+        doodleTimerInterval = null;
+      }
+      if (sendBtn && sendBtn.disabled && sendBtn.textContent.includes('cooldown')) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'send drawing';
+      }
+      if (doodleNotice) {
+        doodleNotice.style.display = 'none';
+      }
+      return false;
+    }
+  }
+
+  function startDoodleCooldown() {
+    localStorage.setItem(DOODLE_COOLDOWN_KEY, Date.now().toString());
+    if (doodleTimerInterval) clearInterval(doodleTimerInterval);
+    updateDoodleCooldownState();
+    doodleTimerInterval = setInterval(updateDoodleCooldownState, 1000);
+  }
+
+  if (updateDoodleCooldownState()) {
+    doodleTimerInterval = setInterval(updateDoodleCooldownState, 1000);
+  }
+
   // Button 2: Send drawing to doodle gallery (Firestore / Local)
   if (sendBtn) {
     sendBtn.addEventListener('click', () => {
+      // Check cooldown
+      const remainingCooldown = getRemainingDoodleCooldown();
+      if (remainingCooldown > 0) {
+        alert(`Rate limit: You are on cooldown! Please wait ${remainingCooldown}s before sending another doodle.`);
+        updateDoodleCooldownState();
+        return;
+      }
+
       const dataUrl = canvas.toDataURL('image/png');
       const now = new Date();
       const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -1194,26 +1455,55 @@ function initDrawingGimmick() {
       };
 
       if (db) {
-        db.collection('doodles')
-          .add(newDoodle)
-          .catch((err) => {
-            console.warn('Firestore write failed, falling back to local:', err);
-            const doodles = loadLocalDoodles();
-            doodles.unshift(newDoodle);
-            saveLocalDoodles(doodles);
-            renderDoodlesList(doodles);
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'sending... ✨';
+
+        async function uploadAndSaveDoodle() {
+          let imageUrl = dataUrl;
+          const storage = getFirebaseStorage();
+          if (storage) {
+            try {
+              sendBtn.textContent = 'uploading doodle... ☁️';
+              const doodleRef = storage.ref().child(`doodles/${Date.now()}_${Math.random().toString(36).slice(2, 7)}.png`);
+              await doodleRef.putString(dataUrl, 'data_url');
+              imageUrl = await doodleRef.getDownloadURL();
+            } catch (storageErr) {
+              console.warn('Doodle storage upload skipped, using direct dataUrl:', storageErr);
+            }
+          }
+
+          sendBtn.textContent = 'saving to gallery... ✨';
+          await db.collection('doodles').add({
+            dataUrl: imageUrl,
+            date: dateStr,
+            createdAt: now.toISOString()
           });
+
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'sent! ✨';
+          startDoodleCooldown();
+          setTimeout(() => {
+            updateDoodleCooldownState();
+          }, 1200);
+        }
+
+        uploadAndSaveDoodle().catch((err) => {
+          console.error('Firestore doodle write failed:', err);
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'send drawing';
+          alert('Could not save drawing: ' + (err.message || 'If you have Brave Shields or an ad-blocker active, it may be blocking Firebase (ERR_BLOCKED_BY_CLIENT).'));
+        });
       } else {
         const doodles = loadLocalDoodles();
         doodles.unshift(newDoodle);
         saveLocalDoodles(doodles);
         renderDoodlesList(doodles);
+        sendBtn.textContent = 'sent! ✨';
+        startDoodleCooldown();
+        setTimeout(() => {
+          updateDoodleCooldownState();
+        }, 1200);
       }
-
-      sendBtn.textContent = 'sent! ✨';
-      setTimeout(() => {
-        sendBtn.textContent = 'send drawing';
-      }, 1200);
     });
   }
 }
@@ -1229,52 +1519,110 @@ function escapeHtml(str) {
 }
 
 // ==========================================
-// ZERO-COOKIE PRIVACY-FRIENDLY VISITOR COUNTER
+// ZERO-COOKIE PRIVACY-FRIENDLY VISITOR COUNTER (GLOBAL FIRESTORE SYNC)
 // ==========================================
 function initVisitorCounter() {
   const counterEl = document.getElementById('visitorCount');
   if (!counterEl) return;
 
   function formatCount(num) {
-    return String(num).padStart(6, '0');
+    return String(Math.max(0, parseInt(num, 10) || 0)).padStart(6, '0');
   }
 
-  // Uses purely in-memory browser tab storage (sessionStorage).
-  // NO cookies are ever created, stored, or sent to any server.
+  // Pre-load from cached memory to avoid counter flicker
+  const cachedVisits = localStorage.getItem('pid_cached_visits');
+  if (cachedVisits) {
+    counterEl.textContent = formatCount(cachedVisits);
+  }
+
+  const db = getFirebaseDb();
   const hasVisitedThisSession = sessionStorage.getItem('pid_visited_session');
 
-  if (!hasVisitedThisSession) {
-    // First time in this session: increment counter by 1
-    fetch('/api/visits', { method: 'POST' })
-      .then(res => res.json())
-      .then(data => {
-        sessionStorage.setItem('pid_visited_session', 'true');
-        if (data && typeof data.count === 'number') {
-          counterEl.textContent = formatCount(data.count);
-        }
-      })
-      .catch(() => {
-        fallbackCount(true);
+  // STRATEGY 1: Real-time Global Firestore Counter (Works directly on GitHub Pages!)
+  if (db && typeof firebase !== 'undefined' && firebase.firestore) {
+    const statsDocRef = db.collection('stats').doc('visits');
+
+    // If new visitor in this session, increment atomically in Firestore
+    if (!hasVisitedThisSession) {
+      sessionStorage.setItem('pid_visited_session', 'true');
+      statsDocRef.set({
+        count: firebase.firestore.FieldValue.increment(1),
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch((err) => {
+        console.warn('Firestore visit increment warning:', err);
       });
-  } else {
-    // Already counted in this session: fetch current count without incrementing
-    fetch('/api/visits')
-      .then(res => res.json())
-      .then(data => {
-        if (data && typeof data.count === 'number') {
-          counterEl.textContent = formatCount(data.count);
+    }
+
+    // Subscribe to live global visit count across all users worldwide
+    statsDocRef.onSnapshot(
+      (snapshot) => {
+        if (snapshot.exists) {
+          const data = snapshot.data();
+          if (data && typeof data.count === 'number') {
+            counterEl.textContent = formatCount(data.count);
+            localStorage.setItem('pid_cached_visits', String(data.count));
+            return;
+          }
+        } else {
+          // Initialize document if first time
+          statsDocRef.set({
+            count: 42,
+            lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+          }, { merge: true }).catch(() => {});
+          counterEl.textContent = formatCount(42);
         }
-      })
-      .catch(() => {
-        fallbackCount(false);
-      });
+      },
+      (err) => {
+        console.warn('Firestore visits subscription error, falling back:', err);
+        fallbackToApiOrLocal();
+      }
+    );
+    return;
   }
 
-  function fallbackCount(shouldIncrement) {
-    let localCount = parseInt(localStorage.getItem('pid_local_visits') || '42', 10);
+  // STRATEGY 2: Fallback to Node server /api/visits (local dev) or localStorage
+  fallbackToApiOrLocal();
+
+  function fallbackToApiOrLocal() {
+    if (!hasVisitedThisSession) {
+      fetch('/api/visits', { method: 'POST' })
+        .then(res => {
+          if (!res.ok) throw new Error('API not available');
+          return res.json();
+        })
+        .then(data => {
+          sessionStorage.setItem('pid_visited_session', 'true');
+          if (data && typeof data.count === 'number') {
+            counterEl.textContent = formatCount(data.count);
+            localStorage.setItem('pid_cached_visits', String(data.count));
+          }
+        })
+        .catch(() => {
+          fallbackLocal(true);
+        });
+    } else {
+      fetch('/api/visits')
+        .then(res => {
+          if (!res.ok) throw new Error('API not available');
+          return res.json();
+        })
+        .then(data => {
+          if (data && typeof data.count === 'number') {
+            counterEl.textContent = formatCount(data.count);
+            localStorage.setItem('pid_cached_visits', String(data.count));
+          }
+        })
+        .catch(() => {
+          fallbackLocal(false);
+        });
+    }
+  }
+
+  function fallbackLocal(shouldIncrement) {
+    let localCount = parseInt(localStorage.getItem('pid_cached_visits') || localStorage.getItem('pid_local_visits') || '42', 10);
     if (shouldIncrement) {
       localCount++;
-      localStorage.setItem('pid_local_visits', String(localCount));
+      localStorage.setItem('pid_cached_visits', String(localCount));
       sessionStorage.setItem('pid_visited_session', 'true');
     }
     counterEl.textContent = formatCount(localCount);

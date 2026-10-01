@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css">
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="script.js" defer></script>
 </head>
@@ -49,9 +50,12 @@
 
       <canvas id="drawingCanvas"></canvas>
 
-      <div class="send-area">
+      <div class="send-area" style="flex-wrap:wrap; justify-content:center;">
         <button class="send-btn" id="downloadBtn" type="button">download drawing</button>
         <button class="send-btn" id="sendBtn" type="button">send drawing</button>
+        <p id="doodleCooldownNotice" style="display:none; color:var(--accent, #ffd166); font-family:'Space Mono', monospace; font-size:0.85rem; margin-top:8px; width:100%; text-align:center;">
+          ⏳ cooldown active: please wait <span id="doodleCooldownTimer">20</span>s before sending another doodle.
+        </p>
       </div>
     </div>
 
